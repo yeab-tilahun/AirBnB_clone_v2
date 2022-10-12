@@ -1,28 +1,27 @@
 #!/usr/bin/python3
+"""
+starts a Flask web application
+"""
 
-from models import *
 from flask import Flask, render_template
+from models import *
+from models import storage
 app = Flask(__name__)
 
 
-@app.route('/hbnb_filters')
-def hbnb_filters():
-    all_info = {}
+@app.route('/hbnb_filters', strict_slashes=False)
+def filters():
+    """display a HTML page like 6-index.html from static"""
     states = storage.all("State").values()
     amenities = storage.all("Amenity").values()
-    for state in states:
-        all_info[state.name] = state
-
-
-    return render_template('10-hbnb_filters.html',
-                           states=all_info,
+    return render_template('10-hbnb_filters.html', states=states,
                            amenities=amenities)
 
 
 @app.teardown_appcontext
-def teardown(err):
+def teardown_db(exception):
+    """closes the storage on teardown"""
     storage.close()
 
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='5000')
